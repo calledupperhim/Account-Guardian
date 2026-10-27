@@ -1,0 +1,21 @@
+name: Build apps
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install pyinstaller
+      - run: pyinstaller --onefile --name AccountGuardian guardian.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AccountGuardian-${{ matrix.os }}
+          path: dist/*
